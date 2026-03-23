@@ -1,0 +1,23 @@
+from flask import Flask, request
+import requests
+
+app = Flask(__name__)
+
+TOKEN = "8603724750:AAF6upsTbCiuqH7wbAaWo0F75WzhOlq"
+CHAT_ID = "958840368"
+
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    data = request.json
+    msg = data.get("message", "🔥 Signal received")
+
+    url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
+
+    requests.post(url, data={
+        "chat_id": CHAT_ID,
+        "text": msg
+    })
+
+    return "ok"
+
+app.run(host="0.0.0.0", port=5000)

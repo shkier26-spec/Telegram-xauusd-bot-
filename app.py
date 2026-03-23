@@ -28,35 +28,23 @@ def home():
 @app.route("/webhook", methods=["POST"])
 def webhook():
     data = request.get_json(force=True)
-    signal = data.get("message", "").upper()
 
-    price = float(data.get("price", 0))
+    msg = data.get("message", "")
+    
+    import re
+    numbers = re.findall(r'\d+\.?\d*', msg)
 
-    if price == 0:
-        return jsonify({"error": "No price"}), 400
+    if not numbers:
+        return jsonify({"error": "no price"}), 200
 
-    if "BUY" in signal:
-        sl = price - SL_PIPS
-        tp1 = price + TP1_PIPS
-        tp2 = price + TP2_PIPS
+    price = float(numbers[0])
 
-        msg = f"""🟢 XAUUSD BUY
+    if "BUY" in msg:
+        sl = price - 5
+        tp1 = price + 5
+        tp2 = price + 10
 
-Entry: {price}
-SL: {sl}
-TP1: {tp1}
-TP2: {tp2}
-
-⚡ Sniper Auto"""
-
-        send(msg)
-
-    elif "SELL" in signal:
-        sl = price + SL_PIPS
-        tp1 = price - TP1_PIPS
-        tp2 = price - TP2_PIPS
-
-        msg = f"""🔴 XAUUSD SELL
+        text = f"""🟢 XAUUSD BUY
 
 Entry: {price}
 SL: {sl}
@@ -65,9 +53,22 @@ TP2: {tp2}
 
 ⚡ Sniper Auto"""
 
-        send(msg)
+    elif "SELL" in msg:
+        sl = price + 5
+        tp1 = price - 5
+        tp2 = price - 10
 
-    return jsonify({"status": "ok"}), 200
+        text = f"""🔴 XAUUSD SELL
 
-port = int(os.environ.get("PORT", 5000))
-app.run(host="0.0.0.0", port=port)
+Entry: {price}
+SL: {sl}
+TP1: {tp1}
+TP2: {tp2}
+
+⚡ Sniper Auto"""
+
+    else:
+        return jsonify({"error": "no signal"}), 200
+
+    send(text)
+    return jsonify({"status": "sent"}), 200

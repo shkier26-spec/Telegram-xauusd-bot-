@@ -4,8 +4,8 @@ import os
 
 app = Flask(__name__)
 
-TOKEN = "8603724750:AAF6upsTbCiuqH7wbAaWo0F75WzhOlqDsTs"
-CHAT_ID = "958840368"
+TOKEN = "8603724750:AAGMMiCddbqgx1Hit6VUGm_amfYQE0r4O-8"
+CHAT_ID = "6017621623"
 
 @app.route('/')
 def home():
